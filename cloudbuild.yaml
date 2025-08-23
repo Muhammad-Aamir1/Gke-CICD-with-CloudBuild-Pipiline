@@ -1,3 +1,9 @@
+# This options block is required for builds that use a custom service account,
+# such as the gke-deploy builder. It tells Cloud Build to store logs
+# in a regional, user-owned bucket, which is a new requirement.
+options:
+  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+
 steps:
 # Step 1: Build the container image
 - name: 'gcr.io/cloud-builders/docker'

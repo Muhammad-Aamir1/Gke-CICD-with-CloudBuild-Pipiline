@@ -3,16 +3,17 @@ options:
   defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
 
 steps:
-# Step 1: Build the container image
+# Step 1: Build the container image.
+# The image is tagged with the unique Git commit SHA (${SHORT_SHA}).
 - name: 'gcr.io/cloud-builders/docker'
   id: Build
   args: ['build', '-t', 'us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}', 'app']
-# Step 2: Push the image to Artifact Registry
+# Step 2: Push the unique image to Artifact Registry.
 - name: 'gcr.io/cloud-builders/docker'
   id: Push
   args: ['push', 'us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}']
-# Step 3: Replace the image placeholder in the manifest
-# This is the crucial fix that ensures the manifest has a valid image reference.
+# Step 3: Replace the image placeholder in the manifest.
+# The 'sed' command ensures the deployment manifest points to the new image.
 - name: 'gcr.io/cloud-builders/gke-deploy'
   id: Replace Image
   entrypoint: 'bash'
@@ -20,8 +21,9 @@ steps:
   - '-c'
   - |
     sed -i "s|REPLACE_IMAGE|us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}|g" k8s/deployment.yaml
-# Step 4: Deploy to GKE
-# The --image flag is now removed, as the manifest is already updated.
+# Step 4: Deploy to GKE.
+# Because the manifest is now updated, this command triggers a rolling update
+# that replaces the old pods with new ones running the latest image.
 - name: 'gcr.io/cloud-builders/gke-deploy'
   id: Deploy
   args:

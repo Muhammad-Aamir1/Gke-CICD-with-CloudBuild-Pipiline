@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: hello-world-app
+      annotations:
+        # This annotation forces a new rolling update on every commit.
+        cloud.google.com/gke-deploy-revision: "REPLACE_REVISION"
     spec:
       containers:
       - name: hello-world-app

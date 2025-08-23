@@ -1,0 +1,20 @@
+steps:
+# Step 1: Build the container image
+- name: 'gcr.io/cloud-builders/docker'
+  id: Build
+  args: ['build', '-t', 'us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}', 'app']
+# Step 2: Push the image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  id: Push
+  args: ['push', 'us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}']
+# Step 3: Deploy to GKE
+- name: 'gcr.io/cloud-builders/gke-deploy'
+  id: Deploy
+  args:
+  - 'run'
+  - '--filename=k8s/deployment.yaml'
+  - '--image=us-central1-docker.pkg.dev/my-gcp-proj-408007/autopilot-repo/hello-world-app:${SHORT_SHA}'
+  - '--location=us-central1'
+  - '--cluster=autopilot-cicd-cluster'
+  - '--namespace=default'
+  - '--app=hello-world-app'

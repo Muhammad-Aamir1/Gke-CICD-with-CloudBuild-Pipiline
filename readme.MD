@@ -55,7 +55,7 @@ gcloud container clusters create-auto <YOUR_CLUSTER_NAME> \
 
 Artifact Registry Repository:
 
-You need a Docker repository to store your images.
+You need a Docker repository to store your images:
 
 gcloud artifacts repositories create <YOUR_REPO_NAME> \
   --repository-format=docker \
